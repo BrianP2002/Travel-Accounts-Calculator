@@ -1,52 +1,16 @@
-public class Traveler {
-    private String id;
-    private String userName;
+import java.util.*;
+public class Traveler extends Person{
     private Double totalAmount;
     private Double payForOthers;
     private Double payByOthers;
+    private HashMap<String, Boolean> chkEvents;
 
     public Traveler(String id, String userName){
-        this.id = id;
-        this.userName = userName;
+        super(id, userName);
         this.totalAmount = 0.0;
         this.payForOthers = 0.0;
         this.payByOthers = 0.0;
-    }
-
-    /**
-     * Achieve the ID of the specific traveler.
-     * 
-     * @return the ID of this traveler
-     */
-    public String getId(){
-        return this.id;
-    }
-
-    /**
-     * Set a new ID for the specific traveler.
-     * 
-     * @param id the new ID will be set
-     */
-    public void setId(String id){
-        this.id = id;
-    }
-    
-    /**
-     * Achieve the user name of the specific traveler.
-     * 
-     * @return the user name of this traveler
-     */
-    public String getUserName(){
-        return this.userName;
-    }
-
-    /**
-     * Set a new user name for the specific traveler.
-     * 
-     * @param userName the new user name will be set
-     */
-    public void setUserName(String userName){
-        this.userName = userName;
+        this.chkEvents = new HashMap<>();
     }
 
     /**
@@ -105,12 +69,20 @@ public class Traveler {
     }
 
     /**
-     * set a new amount that this traveler paid by others in total.
+     * Set a new amount that this traveler paid by others in total.
      * 
      * @param payByOthers the new amount that this traveler paid by others in total
      */
     public void setPayByOthers(Double payByOthers){
         this.payByOthers = payByOthers;
         this.generateTotalAmount();
+    }
+
+    public int joinEvent(String eventId){
+        if(!chkEvents.containsKey(eventId)){
+            return 0;
+        }
+        
+        return 1;
     }
 }
