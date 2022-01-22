@@ -3,6 +3,7 @@ public class Traveler extends Person{
     private Double totalAmount;
     private Double payForOthers;
     private Double payByOthers;
+    
     private HashMap<String, Boolean> chkEvents;
 
     public Traveler(String id, String userName){
@@ -78,11 +79,32 @@ public class Traveler extends Person{
         this.generateTotalAmount();
     }
 
+    /**
+     * Set up a mapping relationship between the traveler and the event.
+     * 
+     * @param eventId the event of this traveler will join into
+     * @return 1 if joined successfully, 0 if the traveler is alreay in the event
+     */
     public int joinEvent(String eventId){
+        if(chkEvents.containsKey(eventId)){
+            return 0;
+        }
+        chkEvents.put(eventId, true);
+        return 1;
+    }
+    
+    /**
+     * Remove the mapping relationship between the traveler and the event.
+     * 
+     * @param eventId the id of the specfic event
+     * @return 1 if the traveler leaves the event successfully, 0 if the traveler is not 
+     * in the event originally.
+     */
+    public int leaveEvent(String eventId){
         if(!chkEvents.containsKey(eventId)){
             return 0;
         }
-        
+        chkEvents.remove(eventId);
         return 1;
     }
 }

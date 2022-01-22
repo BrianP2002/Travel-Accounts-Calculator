@@ -9,9 +9,16 @@ public class Event {
     private Double costAmount;
     private Boolean equalDivide;
 
-    private ArrayList<Participant> participantsList = new ArrayList<Participant>();
-    private HashMap<String, Boolean> chkParticipants = new HashMap<>();
+    private HashMap<String, Boolean> chkParticipants;
+    private HashMap<String, Double> amountList;
 
+    public Event(String eventId, String eventName){
+        this.eventId = eventId;
+        this.eventName = eventName;
+
+        chkParticipants = new HashMap<>();
+        amountList = new HashMap<>();
+    }
 
     /**
      * 
@@ -33,6 +40,9 @@ public class Event {
         this.payerUserName = payerUserName;
         this.costAmount = costAmount;
         this.equalDivide = equalDivide;
+
+        chkParticipants = new HashMap<>();
+        amountList = new HashMap<>();
     }
     
     /**
@@ -185,7 +195,7 @@ public class Event {
      * 
      * @param t1 a traveler, a new participant will be created based on this traveler
      * object
-     * @return 0 if this traveler have already joined this evnet, 1 if this traveler is
+     * @return 0 if this traveler have already joined this event, 1 if this traveler is
      * added to this event successfully
      */
     public int addParticipant(Traveler t1){
@@ -194,9 +204,13 @@ public class Event {
     	}
     	else {
     		chkParticipants.put(t1.getId(), true);
+            amountList.put(t1.getId(), 0.0);
+            if(t1.joinEvent(this.eventId) == 0){
+                return 0;
+            }
     	}
-    	Participant p1 = new Participant(t1.getId(), t1.getUserName());
-        participantsList.add(p1);
+    	/**Participant p1 = new Participant(t1.getId(), t1.getUserName());
+        participantsList.add(p1);**/
 
         if(getEqualDivide()){
             this.autoFill();
@@ -215,17 +229,13 @@ public class Event {
         if(!chkParticipants.containsKey(id)){
             return 0;
         }
-    	for(int i = 0; i < participantsList.size(); ++i) {
-    		if(participantsList.get(i).getId().equals(id)) {
-    			participantsList.remove(i);
-    			chkParticipants.remove(id);
-    			if(getEqualDivide()){
-    	            this.autoFill();
-    	        }
-                return 1;
-    		}
-    	}
-        return 0;
+        chkParticipants.remove(id);
+        amountList.remove(id);
+        if(getEqualDivide()){
+            this.autoFill();
+        }
+        
+    	return 1;
     }
 
     /**
@@ -240,13 +250,8 @@ public class Event {
         if(!chkParticipants.containsKey(Id)){
             return 0;
         }
-    	for(int i = 0; i < participantsList.size(); ++i) {
-    		if(participantsList.get(i).getId().equals(Id)) {
-    			participantsList.get(i).setAmount(amount);
-                return 1;
-    		}
-    	}
-        return 0;
+        amountList.replace(Id, amount);
+        return 1;
     }
     
     /**
@@ -254,12 +259,11 @@ public class Event {
      * the circumstance that this event is equally divided by all participants.
      */
     public void autoFill(){
-    	if(participantsList.size() == 0) {
+    	if(amountList.size() == 0) {
     		return;
     	}
-        Double avgAmount = costAmount/participantsList.size();
-        for(int i = 0; i < participantsList.size(); ++i){
-        	participantsList.get(i).setAmount(avgAmount);
-        }
+        Double avgAmount = getCostAmount()/amountList.size();
+        amountList.replaceAll((key, value) -> avgAmount);
+        return;
     }
 }
